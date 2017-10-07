@@ -14,17 +14,6 @@
 
 -(NSString *)stringByPigLatinization
 {
-    
-    NSRange upperCaseRange;
-    if (upperCaseRange.length == 0)
-        NSLog(@"stringToTest does not contain any upper-case characters.");
-    
-    
-    
-    
-    
-    
-    
     NSLog(@"%@", self);
     
     NSArray<NSString *> *wordsArray = [self componentsSeparatedByString:@" "];
@@ -41,12 +30,12 @@
         NSRange hasUpperCase = [firstLetter rangeOfCharacterFromSet: upperCaseSet];
         if(hasUpperCase.length != 0){
             wordInfo = @{
-                         @"wordKey" : word,
+                         @"wordKey" : word.lowercaseString,
                          @"capitalKey" : @"YES"
                          };
         } else {
             wordInfo = @{
-                         @"wordKey" : word,
+                         @"wordKey" : word.lowercaseString,
                          @"capitalKey" : @"NO"
                          };
         }
@@ -55,14 +44,38 @@
                                   initWithDictionary:wordInfo]];
     }
     
+    NSCharacterSet *vowelsSet = [NSCharacterSet characterSetWithCharactersInString:@"aeiouy"];
     
+    NSMutableString *transformWord = [NSMutableString new];
+    
+    for (NSMutableDictionary *wordInfo in pigWordHolder){
+        transformWord = [[NSMutableString alloc]
+                         initWithString:[wordInfo objectForKey:@"wordKey"]];
+        NSRange initialVowels = [transformWord rangeOfCharacterFromSet:vowelsSet];
+        // if word starts with a consonant
+        if (initialVowels.location != 0) {
+            do {
+                NSString *firstLetter = [transformWord substringToIndex:1];
+                transformWord = [[NSMutableString alloc]
+                                 initWithString:[transformWord substringFromIndex:1]];
+                [transformWord appendString:firstLetter];
+                initialVowels = [transformWord rangeOfCharacterFromSet:vowelsSet];
+            } while (initialVowels.location != 0);
+            
+        }
+        [transformWord appendString:@"ay"];
+        [wordInfo addEntriesFromDictionary:@{@"pigKey" : transformWord}];
 
-    
-    
-    NSLog(@"%@\n",pigWordHolder);
-
+    }
+    NSLog(@"%@", pigWordHolder)
     
     return @"";
 }
 
 @end
+
+// Recapitalize
+// Assemble into string
+// Trim last space
+// Return
+
