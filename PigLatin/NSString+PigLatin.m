@@ -7,15 +7,12 @@
 //
 
 #import "NSString+PigLatin.h"
-#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
 
 
 @implementation NSString (PigLatin)
 
 -(NSString *)stringByPigLatinization
-{
-    NSLog(@"%@", self);
-    
+{    
     NSArray<NSString *> *wordsArray = [self componentsSeparatedByString:@" "];
     
     NSMutableArray<NSMutableDictionary<NSString *, NSString *> *> *pigWordHolder = [NSMutableArray new];
@@ -46,6 +43,8 @@
     
     NSCharacterSet *vowelsSet = [NSCharacterSet characterSetWithCharactersInString:@"aeiouy"];
     
+    NSMutableString *returnString = [[NSMutableString alloc] initWithString:@" "];
+    
     NSMutableString *transformWord = [NSMutableString new];
     
     for (NSMutableDictionary *wordInfo in pigWordHolder){
@@ -61,15 +60,21 @@
                 [transformWord appendString:firstLetter];
                 initialVowels = [transformWord rangeOfCharacterFromSet:vowelsSet];
             } while (initialVowels.location != 0);
-            
         }
         [transformWord appendString:@"ay"];
+        
+        if([[wordInfo objectForKey:@"capitalKey"] isEqualToString:@"YES"]) {
+            transformWord = [[NSMutableString alloc] initWithString:[transformWord capitalizedString]];
+        }
+        
+        [returnString appendFormat:@"%@ ", transformWord];
+        
         [wordInfo addEntriesFromDictionary:@{@"pigKey" : transformWord}];
-
     }
-    NSLog(@"%@", pigWordHolder)
     
-    return @"";
+    NSCharacterSet *whiteChars = [NSMutableCharacterSet whitespaceCharacterSet];
+    
+    return [returnString stringByTrimmingCharactersInSet:whiteChars];
 }
 
 @end
