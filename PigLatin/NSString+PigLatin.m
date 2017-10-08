@@ -12,69 +12,56 @@
 @implementation NSString (PigLatin)
 
 -(NSString *)stringByPigLatinization
-{    
-    NSArray<NSString *> *wordsArray = [self componentsSeparatedByString:@" "];
-    
-    NSMutableArray<NSMutableDictionary<NSString *, NSString *> *> *pigWordHolder = [NSMutableArray new];
-
+{
+    //prep character sets
     NSCharacterSet *upperCaseSet = [NSCharacterSet uppercaseLetterCharacterSet];
-
-    
-    for (NSString *word in wordsArray) {
-        NSDictionary<NSString *, NSString *> *wordInfo;
-        
-        NSString *firstLetter = [word substringToIndex:1];
-        NSRange hasUpperCase = [firstLetter rangeOfCharacterFromSet: upperCaseSet];
-        if(hasUpperCase.length != 0){
-            wordInfo = @{
-                         @"wordKey" : word.lowercaseString,
-                         @"capitalKey" : @"YES"
-                         };
-        } else {
-            wordInfo = @{
-                         @"wordKey" : word.lowercaseString,
-                         @"capitalKey" : @"NO"
-                         };
-        }
-        
-        [pigWordHolder addObject:[[NSMutableDictionary alloc]
-                                  initWithDictionary:wordInfo]];
-    }
-    
-    NSCharacterSet *vowelsSet = [NSCharacterSet characterSetWithCharactersInString:@"aeiouy"];
-    
-    NSMutableString *returnString = [[NSMutableString alloc] initWithString:@" "];
-    
-    NSMutableString *transformWord = [NSMutableString new];
-    
-    for (NSMutableDictionary *wordInfo in pigWordHolder){
-        transformWord = [[NSMutableString alloc]
-                         initWithString:[wordInfo objectForKey:@"wordKey"]];
-        NSRange initialVowels = [transformWord rangeOfCharacterFromSet:vowelsSet];
-        // if word starts with a consonant
-        if (initialVowels.location != 0) {
-            do {
-                NSString *firstLetter = [transformWord substringToIndex:1];
-                transformWord = [[NSMutableString alloc]
-                                 initWithString:[transformWord substringFromIndex:1]];
-                [transformWord appendString:firstLetter];
-                initialVowels = [transformWord rangeOfCharacterFromSet:vowelsSet];
-            } while (initialVowels.location != 0);
-        }
-        [transformWord appendString:@"ay"];
-        
-        if([[wordInfo objectForKey:@"capitalKey"] isEqualToString:@"YES"]) {
-            transformWord = [[NSMutableString alloc] initWithString:[transformWord capitalizedString]];
-        }
-        
-        [returnString appendFormat:@"%@ ", transformWord];
-        
-        [wordInfo addEntriesFromDictionary:@{@"pigKey" : transformWord}];
-    }
-    
     NSCharacterSet *whiteChars = [NSMutableCharacterSet whitespaceCharacterSet];
     
+    //break into words
+    NSArray<NSString *> *wordsArray = [self componentsSeparatedByString:@" "];
+    
+    //create return string
+    NSMutableString *returnString = [[NSMutableString alloc] initWithString:@" "];
+
+    //iterate on words
+    for (NSString *word in wordsArray) {
+        NSString *pigShiftedWord;
+        
+        //check for uppercase then pigShift
+        NSRange hasUpperCase = [word rangeOfCharacterFromSet: upperCaseSet];
+        if(hasUpperCase.location == 0){
+            pigShiftedWord = [[NSString pigShift:word.lowercaseString] capitalizedString];
+        } else {
+            pigShiftedWord = [NSString pigShift:word.lowercaseString];
+        }
+        
+        //append to returnString
+        [returnString appendFormat:@"%@ ", pigShiftedWord];
+    }
+    
+    //return after trimming whitespace
     return [returnString stringByTrimmingCharactersInSet:whiteChars];
+}
+
+
++(NSString *)pigShift:(NSString *)stringToPigShift{
+    //get vowels
+    NSCharacterSet *vowelsSet = [NSCharacterSet characterSetWithCharactersInString:@"aeiouy"];
+    
+    //check for initial vowels
+    NSRange initialVowels = [stringToPigShift rangeOfCharacterFromSet:vowelsSet];
+    
+    //if initial consonant shift to end and call again
+    if (initialVowels.location != 0) {
+        return [NSString pigShift:[NSString stringWithFormat:@"%@%@",
+                            [stringToPigShift substringFromIndex:1],
+                            [stringToPigShift substringToIndex:1]]];
+    }
+    
+    //if initial vowel, append "ay" and return
+    else {
+        return [NSString stringWithFormat:@"%@ay", stringToPigShift];
+    }
 }
 
 @end

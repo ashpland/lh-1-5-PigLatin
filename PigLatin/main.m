@@ -13,8 +13,7 @@
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        
-        
+ 
         NSLog(@"%@", [@"Hello World" stringByPigLatinization]);
         NSLog(@"%@", [@"Glitter Turkey" stringByPigLatinization]);
         NSLog(@"%@", [@"Alex is a babe" stringByPigLatinization]);
