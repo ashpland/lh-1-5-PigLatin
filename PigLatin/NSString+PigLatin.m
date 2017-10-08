@@ -17,12 +17,12 @@
     NSCharacterSet *upperCaseSet = [NSCharacterSet uppercaseLetterCharacterSet];
     NSCharacterSet *whiteChars = [NSMutableCharacterSet whitespaceCharacterSet];
     
+    //create return string
+    NSMutableString *returnString = [NSMutableString new];
+
     //break into words
     NSArray<NSString *> *wordsArray = [self componentsSeparatedByString:@" "];
     
-    //create return string
-    NSMutableString *returnString = [[NSMutableString alloc] initWithString:@" "];
-
     //iterate on words
     for (NSString *word in wordsArray) {
         NSString *pigShiftedWord;
@@ -65,9 +65,3 @@
 }
 
 @end
-
-// Recapitalize
-// Assemble into string
-// Trim last space
-// Return
-
