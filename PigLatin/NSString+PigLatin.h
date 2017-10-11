@@ -10,6 +10,8 @@
 
 @interface NSString (PigLatin)
 
--(NSString *)stringByPigLatinization;
+- (NSString *)stringByPigLatinization;
++ (NSString *)pigShiftWord:(NSString *)wordToPigShift;
++ (NSString *)pigShiftLowercaseString:(NSString *)stringToPigShift;
 
 @end
